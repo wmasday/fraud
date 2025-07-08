@@ -117,8 +117,6 @@ npm start     # Prod mode
 - 📁 Access to all reports (Phishing, APK, QRIS, Virtual Numbers)
 - 🔍 Modal view for detail inspection
 
-![Modal View](assets/modal-screenshot.png)
-
 ---
 
 ## 🧩 Database Schema
