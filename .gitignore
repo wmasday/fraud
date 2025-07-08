@@ -94,7 +94,6 @@ dist
 
 # Gatsby files
 .cache/
-public
 
 # Storybook build outputs
 .out
@@ -128,7 +127,6 @@ temp_files/
 *.pdf
 *.jpg
 *.jpeg
-*.png
 *.gif
 *.mp4
 *.avi

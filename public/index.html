@@ -1,0 +1,1196 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fraud Detection Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --neutral-50: #fafafa;
+            --neutral-100: #f5f5f5;
+            --neutral-200: #e5e5e5;
+            --neutral-300: #d4d4d4;
+            --neutral-400: #a3a3a3;
+            --neutral-500: #737373;
+            --neutral-600: #525252;
+            --neutral-700: #404040;
+            --neutral-800: #262626;
+            --neutral-900: #171717;
+            --neutral-950: #0a0a0a;
+            --primary: #3b82f6;
+            --primary-dark: #1d4ed8;
+            --bg-light: #ffffff;
+            --bg-secondary: #f8fafc;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+        }
+
+        * {
+            font-family: 'Sora', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            min-height: 100vh;
+            color: var(--neutral-800);
+        }
+
+        .navbar {
+            background: rgba(255, 255, 255, 0.95) !important;
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar-brand {
+            color: var(--primary) !important;
+            font-weight: 400;
+        }
+
+        .navbar-text {
+            color: var(--neutral-600) !important;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            border: none;
+            border-radius: 20px;
+            padding: 2rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.1) 50%, transparent 70%);
+            transform: translateX(-100%);
+            transition: transform 0.6s ease;
+        }
+
+        .stat-card:hover::before {
+            transform: translateX(100%);
+        }
+
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 500;
+        }
+
+        .table {
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        .table th {
+            color: var(--neutral-800);
+            border: none;
+            font-weight: 600;
+            padding: 1rem;
+            text-align: center;
+            border-radius: 20px;
+        }
+
+        .table td {
+            background: rgba(255, 255, 255, 0.5);
+            color: var(--neutral-700);
+            border: none;
+            padding: 1rem;
+            vertical-align: middle;
+        }
+
+        .table tbody tr {
+            transition: all 0.3s ease;
+        }
+
+        .table tbody tr:hover {
+            background: rgba(59, 130, 246, 0.1);
+            transform: scale(1.01);
+        }
+
+        .badge {
+            border-radius: 20px;
+            padding: 0.5rem 1rem;
+            font-weight: 500;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border: none;
+            border-radius: 15px;
+            padding: 0.75rem 2rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+        }
+
+        .btn-outline-primary {
+            border-color: var(--primary);
+            color: var(--primary);
+            border-radius: 15px;
+            font-weight: 500;
+        }
+
+        .btn-outline-primary:hover {
+            background: var(--primary);
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .nav-tabs {
+            border-bottom: 2px solid var(--neutral-200);
+        }
+
+        .nav-tabs .nav-link {
+            border: none;
+            color: var(--neutral-600);
+            font-weight: 500;
+            border-radius: 10px 10px 0 0;
+            margin-right: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-tabs .nav-link:hover {
+            color: var(--primary);
+            background: rgba(59, 130, 246, 0.1);
+        }
+
+        .nav-tabs .nav-link.active {
+            background: var(--primary);
+            color: white;
+            border: none;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(59, 130, 246, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--primary);
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.6s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .slide-in {
+            animation: slideIn 0.8s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(-100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 8px;
+        }
+
+        .status-active {
+            background: var(--success);
+        }
+
+        .status-inactive {
+            background: var(--danger);
+        }
+
+        .status-warning {
+            background: var(--warning);
+        }
+
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .modal-content {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 20px;
+        }
+
+        .modal-header {
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .modal-title {
+            color: var(--neutral-800);
+            font-weight: 600;
+        }
+
+        .btn-close {
+            filter: invert(1);
+        }
+
+        .bg-dark {
+            background: var(--neutral-800) !important;
+        }
+
+        .text-light {
+            color: var(--neutral-100) !important;
+        }
+
+        .text-muted {
+            color: var(--neutral-500) !important;
+        }
+
+        code {
+            background: var(--neutral-100);
+            color: var(--neutral-700);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-size: 0.875em;
+        }
+
+        a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        a:hover {
+            color: var(--primary-dark);
+        }
+
+        .card-header {
+            background: rgba(255, 255, 255, 0.8);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            font-weight: 600;
+            color: var(--neutral-800);
+            border-radius: 20px !important;
+        }
+
+        .card-body {
+            color: var(--neutral-700);
+        }
+
+        h5,
+        h6 {
+            color: var(--neutral-800);
+            font-weight: 600;
+        }
+
+        p {
+            color: var(--neutral-700);
+            margin-bottom: 0.5rem;
+        }
+
+        strong {
+            color: var(--neutral-800);
+            font-weight: 600;
+        }
+
+        footer {
+            font-weight: 300;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" href="#">
+                <img src="./logo.svg" alt="logo" style="width: 90px;" class="ms-2" />
+                <span class="ms-2"> | Fraud Detection</span>
+            </a>
+            <div class="navbar-nav ms-auto">
+                <span class="navbar-text">
+                    <i class="bi bi-circle-fill text-success me-1"></i>
+                    <span id="status-text">Connected</span>
+                </span>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container py-4">
+        <!-- Stats Cards -->
+        <div class="row mb-4 fade-in">
+            <div class="col-md-3 mb-3">
+                <div class="card stat-card">
+                    <div class="stat-number" id="total-applications">0</div>
+                    <div class="stat-label">
+                        <i class="bi bi-phone me-2"></i>APK Reports
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card stat-card">
+                    <div class="stat-number" id="total-phishing">0</div>
+                    <div class="stat-label">
+                        <i class="bi bi-link-45deg me-2"></i>Phishing Links
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card stat-card">
+                    <div class="stat-number" id="total-qris">0</div>
+                    <div class="stat-label">
+                        <i class="bi bi-qr-code me-2"></i>QRIS Reports
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card stat-card">
+                    <div class="stat-number" id="total-virtual">0</div>
+                    <div class="stat-label">
+                        <i class="bi bi-telephone me-2"></i>Virtual Numbers
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <ul class="nav nav-tabs mb-4" id="dataTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="applications-tab" data-bs-toggle="tab"
+                    data-bs-target="#applications" type="button" role="tab">
+                    <i class="bi bi-phone me-2"></i>APK Reports
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="phishing-tab" data-bs-toggle="tab" data-bs-target="#phishing" type="button"
+                    role="tab">
+                    <i class="bi bi-link-45deg me-2"></i>Phishing Links
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="qris-tab" data-bs-toggle="tab" data-bs-target="#qris" type="button"
+                    role="tab">
+                    <i class="bi bi-qr-code me-2"></i>QRIS Reports
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="virtual-tab" data-bs-toggle="tab" data-bs-target="#virtual" type="button"
+                    role="tab">
+                    <i class="bi bi-telephone me-2"></i>Virtual Numbers
+                </button>
+            </li>
+        </ul>
+
+        <!-- Tab Content -->
+        <div class="tab-content" id="dataTabsContent">
+            <!-- Applications Tab -->
+            <div class="tab-pane fade show active" id="applications" role="tabpanel">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0"><i class="bi bi-phone me-2"></i>APK Malware Reports</h5>
+                        <button class="btn btn-primary btn-sm" onclick="refreshData('applications')">
+                            <i class="bi bi-arrow-clockwise me-1"></i>Refresh
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>File Name</th>
+                                        <th>Hash</th>
+                                        <th>Reports</th>
+                                        <th>Status</th>
+                                        <th>Date</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="applications-table">
+                                    <tr>
+                                        <td colspan="6" class="text-center">
+                                            <div class="loading"></div>
+                                            <span class="ms-2">Loading data...</span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Phishing Tab -->
+            <div class="tab-pane fade" id="phishing" role="tabpanel">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0"><i class="bi bi-link-45deg me-2"></i>Phishing Link Reports</h5>
+                        <button class="btn btn-primary btn-sm" onclick="refreshData('phishing')">
+                            <i class="bi bi-arrow-clockwise me-1"></i>Refresh
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>URL</th>
+                                        <th>Reports</th>
+                                        <th>Status</th>
+                                        <th>Date</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="phishing-table">
+                                    <tr>
+                                        <td colspan="5" class="text-center">
+                                            <div class="loading"></div>
+                                            <span class="ms-2">Loading data...</span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- QRIS Tab -->
+            <div class="tab-pane fade" id="qris" role="tabpanel">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0"><i class="bi bi-qr-code me-2"></i>QRIS Reports</h5>
+                        <button class="btn btn-primary btn-sm" onclick="refreshData('qris')">
+                            <i class="bi bi-arrow-clockwise me-1"></i>Refresh
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Store</th>
+                                        <th>City</th>
+                                        <th>Zip Code</th>
+                                        <th>Reports</th>
+                                        <th>Status</th>
+                                        <th>Date</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="qris-table">
+                                    <tr>
+                                        <td colspan="7" class="text-center">
+                                            <div class="loading"></div>
+                                            <span class="ms-2">Loading data...</span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Virtual Numbers Tab -->
+            <div class="tab-pane fade" id="virtual" role="tabpanel">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0"><i class="bi bi-telephone me-2"></i>Virtual Number Reports</h5>
+                        <button class="btn btn-primary btn-sm" onclick="refreshData('virtual')">
+                            <i class="bi bi-arrow-clockwise me-1"></i>Refresh
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Number</th>
+                                        <th>Operator</th>
+                                        <th>WhatsApp</th>
+                                        <th>E-Wallets</th>
+                                        <th>Reports</th>
+                                        <th>Date</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="virtual-table">
+                                    <tr>
+                                        <td colspan="7" class="text-center">
+                                            <div class="loading"></div>
+                                            <span class="ms-2">Loading data...</span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Details -->
+    <div class="modal fade" id="detailModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalTitle">Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="modalBody">
+                    <!-- Content will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="text-center pt-5 pb-5">Fraud Detection © 2025 - Relyze by Recov</footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Global variables
+        let currentData = {
+            applications: [],
+            phishing: [],
+            qris: [],
+            virtual: []
+        };
+        let isLoading = true;
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function () {
+            loadAllData();
+            setInterval(loadAllData, 30000); // Refresh every 30 seconds
+        });
+
+        // Load all data
+        async function loadAllData() {
+            try {
+                isLoading = true;
+                updateLoadingState();
+
+                await Promise.all([
+                    loadApplications(),
+                    loadPhishing(),
+                    loadQRIS(),
+                    loadVirtualNumbers()
+                ]);
+
+                updateStats();
+                isLoading = false;
+                updateLoadingState();
+            } catch (error) {
+                console.error('Error loading data:', error);
+                showError('Failed to load data');
+                isLoading = false;
+                updateLoadingState();
+            }
+        }
+
+        // Update loading state
+        function updateLoadingState() {
+            const buttons = document.querySelectorAll('.btn-outline-primary');
+            buttons.forEach(btn => {
+                btn.disabled = isLoading;
+                if (isLoading) {
+                    btn.innerHTML = '<div class="loading"></div>';
+                } else {
+                    btn.innerHTML = '<i class="bi bi-eye"></i>';
+                }
+            });
+        }
+
+        // Load applications data
+        async function loadApplications() {
+            try {
+                console.log('Fetching applications data...');
+                const response = await fetch('/api/applications', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                });
+                console.log('Applications response status:', response.status);
+                console.log('Applications response ok:', response.ok);
+                console.log('Applications response headers:', response.headers);
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const responseText = await response.text();
+                console.log('Applications raw response:', responseText);
+                console.log('Applications response length:', responseText.length);
+
+                let data;
+                try {
+                    data = JSON.parse(responseText);
+                    console.log('Applications parsed data:', data);
+                    console.log('Applications data type:', typeof data);
+                    console.log('Applications data length:', Array.isArray(data) ? data.length : 'not array');
+                } catch (parseError) {
+                    console.error('JSON parse error:', parseError);
+                    console.error('Failed to parse response:', responseText);
+                    throw new Error('Invalid JSON response');
+                }
+
+                currentData.applications = Array.isArray(data) ? data : [];
+                console.log('Final applications data:', currentData.applications);
+                renderApplicationsTable(currentData.applications);
+            } catch (error) {
+                console.error('Error loading applications:', error);
+                currentData.applications = [];
+                renderApplicationsTable([]);
+            }
+        }
+
+        // Load phishing data
+        async function loadPhishing() {
+            try {
+                console.log('Fetching phishing data...');
+                const response = await fetch('/api/phisings', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                });
+                console.log('Phishing response status:', response.status);
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                console.log('Phishing data loaded:', data);
+                currentData.phishing = Array.isArray(data) ? data : [];
+                renderPhishingTable(currentData.phishing);
+            } catch (error) {
+                console.error('Error loading phishing:', error);
+                currentData.phishing = [];
+                renderPhishingTable([]);
+            }
+        }
+
+        // Load QRIS data
+        async function loadQRIS() {
+            try {
+                console.log('Fetching QRIS data...');
+                const response = await fetch('/api/qris', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                });
+                console.log('QRIS response status:', response.status);
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                console.log('QRIS data loaded:', data);
+                currentData.qris = Array.isArray(data) ? data : [];
+                renderQRISTable(currentData.qris);
+            } catch (error) {
+                console.error('Error loading QRIS:', error);
+                currentData.qris = [];
+                renderQRISTable([]);
+            }
+        }
+
+        // Load virtual numbers data
+        async function loadVirtualNumbers() {
+            try {
+                console.log('Fetching virtual numbers data...');
+                const response = await fetch('/api/virtual_numbers', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                });
+                console.log('Virtual numbers response status:', response.status);
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                console.log('Virtual numbers data loaded:', data);
+                currentData.virtual = Array.isArray(data) ? data : [];
+                renderVirtualTable(currentData.virtual);
+            } catch (error) {
+                console.error('Error loading virtual numbers:', error);
+                currentData.virtual = [];
+                renderVirtualTable([]);
+            }
+        }
+
+        // Render applications table
+        function renderApplicationsTable(data) {
+            const tbody = document.getElementById('applications-table');
+            if (data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="text-center">No data available</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = data.map(item => `
+                <tr class="slide-in">
+                    <td>
+                        <i class="bi bi-file-earmark-zip me-2"></i>
+                        ${item.file_name || 'N/A'}
+                    </td>
+                    <td class="text-center">
+                        <code class="text-muted">${item.file_identification ? item.file_identification.substring(0, 16) + '...' : 'N/A'}</code>
+                    </td>
+                    <td class="text-center">
+                        <span class="badge bg-primary">${item.report_count || 0}</span>
+                    </td>
+                    <td class="text-center">
+                        <span class="status-indicator ${item.llm_report ? 'status-warning' : 'status-inactive'}"></span>
+                        ${item.llm_report ? 'Analyzed' : 'Pending'}
+                    </td>
+                    <td class="text-center">${formatDate(item.createdAt)}</td>
+                    <td class="text-center">
+                        <button class="btn btn-sm btn-outline-primary" onclick="showDetails('application', ${item.id})">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Render phishing table
+        function renderPhishingTable(data) {
+            const tbody = document.getElementById('phishing-table');
+            if (data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center">No data available</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = data.map(item => `
+                <tr class="slide-in">
+                    <td>
+                        <i class="bi bi-link-45deg me-2"></i>
+                        <a href="${item.url_phising}" target="_blank" class="text-decoration-none">
+                            ${item.url_phising ? item.url_phising.substring(0, 50) + '...' : 'N/A'}
+                        </a>
+                    </td>
+                    <td class="text-center">
+                        <span class="badge bg-primary">${item.report_count || 0}</span>
+                    </td>
+                    <td>
+                        <span class="status-indicator ${item.llm_report ? 'status-warning' : 'status-inactive'}"></span>
+                        ${item.llm_report ? 'Analyzed' : 'Pending'}
+                    </td>
+                    <td class="text-center">${formatDate(item.createdAt)}</td>
+                    <td class="text-center">
+                        <button class="btn btn-sm btn-outline-primary" onclick="showDetails('phishing', ${item.id})">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Render QRIS table
+        function renderQRISTable(data) {
+            const tbody = document.getElementById('qris-table');
+            if (data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" class="text-center">No data available</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = data.map(item => `
+                <tr class="slide-in">
+                    <td>
+                        <i class="bi bi-shop me-2"></i>
+                        ${item.store || 'N/A'}
+                    </td>
+                    <td class="text-center">${item.city || 'N/A'}</td>
+                    <td class="text-center">${item.zip_code || 'N/A'}</td>
+                    <td class="text-center">
+                        <span class="badge bg-primary">${item.report_count || 0}</span>
+                    </td>
+                    <td class="text-center">
+                        <span class="status-indicator ${item.llm_report ? 'status-warning' : 'status-inactive'}"></span>
+                        ${item.llm_report ? 'Analyzed' : 'Pending'}
+                    </td>
+                    <td class="text-center">${formatDate(item.createdAt)}</td>
+                    <td class="text-center">
+                        <button class="btn btn-sm btn-outline-primary" onclick="showDetails('qris', ${item.id})">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Render virtual numbers table
+        function renderVirtualTable(data) {
+            const tbody = document.getElementById('virtual-table');
+            if (data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" class="text-center">No data available</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = data.map(item => `
+                <tr class="slide-in">
+                    <td>
+                        <i class="bi bi-telephone me-2"></i>
+                        ${item.number || 'N/A'}
+                    </td>
+                    <td>${item.operator || 'N/A'}</td>
+                    <td>
+                        <span class="status-indicator ${item.whatsapp ? 'status-active' : 'status-inactive'}"></span>
+                        ${item.whatsapp ? 'Active' : 'Inactive'}
+                    </td>
+                    <td>
+                        <div class="d-flex flex-wrap gap-1">
+                            ${item.ovo ? '<span class="badge bg-success">OVO</span>' : ''}
+                            ${item.gopay ? '<span class="badge bg-success">GOPAY</span>' : ''}
+                            ${item.dana ? '<span class="badge bg-success">DANA</span>' : ''}
+                            ${item.linkaja ? '<span class="badge bg-success">LINKAJA</span>' : ''}
+                            ${item.isaku ? '<span class="badge bg-success">ISAKU</span>' : ''}
+                            ${item.shopeepay ? '<span class="badge bg-success">SHOPEEPAY</span>' : ''}
+                        </div>
+                    </td>
+                    <td class="text-center">
+                        <span class="badge bg-primary">${item.report_count || 0}</span>
+                    </td>
+                    <td class="text-center">${formatDate(item.createdAt)}</td>
+                    <td class="text-center">
+                        <button class="btn btn-sm btn-outline-primary" onclick="showDetails('virtual', ${item.id})">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Update statistics
+        function updateStats() {
+            document.getElementById('total-applications').textContent = currentData.applications.length;
+            document.getElementById('total-phishing').textContent = currentData.phishing.length;
+            document.getElementById('total-qris').textContent = currentData.qris.length;
+            document.getElementById('total-virtual').textContent = currentData.virtual.length;
+        }
+
+        // Show details modal
+        function showDetails(type, id) {
+            console.log('showDetails called with:', { type, id });
+            console.log('currentData:', currentData);
+
+            let data;
+            switch (type) {
+                case 'application':
+                    data = currentData.applications.find(item => item.id == id);
+                    console.log('Found application data:', data);
+                    break;
+                case 'phishing':
+                    data = currentData.phishing.find(item => item.id == id);
+                    console.log('Found phishing data:', data);
+                    break;
+                case 'qris':
+                    data = currentData.qris.find(item => item.id == id);
+                    console.log('Found QRIS data:', data);
+                    break;
+                case 'virtual':
+                    data = currentData.virtual.find(item => item.id == id);
+                    console.log('Found virtual data:', data);
+                    break;
+            }
+
+            console.log('Data to show in modal:', data);
+
+
+            const modal = document.getElementById('detailModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalBody = document.getElementById('modalBody');
+
+            console.log('Modal elements:', { modal, modalTitle, modalBody });
+
+            if (!modal || !modalTitle || !modalBody) {
+                console.error('Modal elements not found');
+                return;
+            }
+
+            // Set title
+            modalTitle.textContent = `${type.charAt(0).toUpperCase() + type.slice(1)} Details`;
+
+            // Build content based on type
+            let content = '';
+            switch (type) {
+                case 'application':
+                    content = `
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6 class="text-primary">File Information</h6>
+                                <p><strong>ID:</strong> ${data.id}</p>
+                                <p><strong>File Name:</strong> ${data.file_name || 'N/A'}</p>
+                                <p><strong>File ID:</strong> ${data.file_identification || 'N/A'}</p>
+                                <p><strong>Report Count:</strong> ${data.report_count || 0}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <h6 class="text-primary">Timestamps</h6>
+                                <p><strong>Created:</strong> ${new Date(data.createdAt).toLocaleString()}</p>
+                                <p><strong>Updated:</strong> ${new Date(data.updatedAt).toLocaleString()}</p>
+                            </div>
+
+                            ${data.llm_report ? `
+                            <div class="mt-4">
+                                <h6 class="text-primary">LLM Analysis Report</h6>
+                                <div class="bg-light p-3 rounded">
+                                    <pre class="mb-0" style="white-space: pre-wrap;">${data.llm_report}</pre>
+                                </div>
+                            </div>
+                            ` : ''}
+                        </div>
+                        
+                    `;
+                    break;
+                case 'phishing':
+                    content = `
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6 class="text-primary">Phishing Information</h6>
+                                <p><strong>ID:</strong> ${data.id}</p>
+                                <p><strong>URL:</strong> <a href="${data.url_phising}" target="_blank">${data.url_phising}</a></p>
+                                <p><strong>HTML File:</strong> ${data.file_html || 'N/A'}</p>
+                                <p><strong>Report Count:</strong> ${data.report_count || 0}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <h6 class="text-primary">Timestamps</h6>
+                                <p><strong>Created:</strong> ${new Date(data.createdAt).toLocaleString()}</p>
+                                <p><strong>Updated:</strong> ${new Date(data.updatedAt).toLocaleString()}</p>
+                            </div>
+                        </div>
+                        ${data.llm_report ? `
+                        <div class="mt-4">
+                            <h6 class="text-primary">LLM Analysis Report</h6>
+                            <div class="bg-light p-3 rounded">
+                                <pre class="mb-0" style="white-space: pre-wrap;">${data.llm_report}</pre>
+                            </div>
+                        </div>
+                        ` : ''}
+                    `;
+                    break;
+                case 'qris':
+                    content = `
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6 class="text-primary">QRIS Information</h6>
+                                <p><strong>ID:</strong> ${data.id}</p>
+                                <p><strong>QRIS Data:</strong> ${data.qris_data || 'N/A'}</p>
+                                <p><strong>Report Count:</strong> ${data.report_count || 0}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <h6 class="text-primary">Timestamps</h6>
+                                <p><strong>Created:</strong> ${new Date(data.createdAt).toLocaleString()}</p>
+                                <p><strong>Updated:</strong> ${new Date(data.updatedAt).toLocaleString()}</p>
+                            </div>
+                        </div>
+                        ${data.llm_report ? `
+                        <div class="mt-4">
+                            <h6 class="text-primary">LLM Analysis Report</h6>
+                            <div class="bg-light p-3 rounded">
+                                <pre class="mb-0" style="white-space: pre-wrap;">${data.llm_report}</pre>
+                            </div>
+                        </div>
+                        ` : ''}
+                    `;
+                    break;
+                case 'virtual':
+                    content = `
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6 class="text-primary">Virtual Number Information</h6>
+                                <p><strong>ID:</strong> ${data.id}</p>
+                                <p><strong>Phone Number:</strong> ${data.phone_number || 'N/A'}</p>
+                                <p><strong>Report Count:</strong> ${data.report_count || 0}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <h6 class="text-primary">Timestamps</h6>
+                                <p><strong>Created:</strong> ${new Date(data.createdAt).toLocaleString()}</p>
+                                <p><strong>Updated:</strong> ${new Date(data.updatedAt).toLocaleString()}</p>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <h6 class="text-primary">E-Wallet Status</h6>
+                            <div class="d-grid gap-2">
+                                <div class="d-flex justify-content-between">
+                                    <span>OVO:</span>
+                                    <span class="badge ${data.ovo ? 'bg-success' : 'bg-secondary'}">${data.ovo ? 'Active' : 'Inactive'}</span>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <span>GOPAY:</span>
+                                    <span class="badge ${data.gopay ? 'bg-success' : 'bg-secondary'}">${data.gopay ? 'Active' : 'Inactive'}</span>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <span>DANA:</span>
+                                    <span class="badge ${data.dana ? 'bg-success' : 'bg-secondary'}">${data.dana ? 'Active' : 'Inactive'}</span>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <span>LINKAJA:</span>
+                                    <span class="badge ${data.linkaja ? 'bg-success' : 'bg-secondary'}">${data.linkaja ? 'Active' : 'Inactive'}</span>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <span>ISAKU:</span>
+                                    <span class="badge ${data.isaku ? 'bg-success' : 'bg-secondary'}">${data.isaku ? 'Active' : 'Inactive'}</span>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <span>SHOPEEPAY:</span>
+                                    <span class="badge ${data.shopeepay ? 'bg-success' : 'bg-secondary'}">${data.shopeepay ? 'Active' : 'Inactive'}</span>
+                                </div>
+                            </div>
+                        </div>
+                        ${data.llm_report ? `
+                        <div class="mt-4">
+                            <h6 class="text-primary">LLM Analysis Report</h6>
+                            <div class="bg-light p-3 rounded">
+                                <pre class="mb-0" style="white-space: pre-wrap;">${data.llm_report}</pre>
+                            </div>
+                        </div>
+                        ` : ''}
+                    `;
+                    break;
+            }
+
+            console.log('Modal content to be set:', content);
+            modalBody.innerHTML = content;
+
+            // Show modal
+            const bootstrapModal = new bootstrap.Modal(modal);
+            bootstrapModal.show();
+            console.log('Modal should be shown now');
+        }
+
+        // Refresh data
+        function refreshData(type) {
+            const button = event.target;
+            const originalText = button.innerHTML;
+            button.innerHTML = '<div class="loading"></div>';
+            button.disabled = true;
+
+            setTimeout(async () => {
+                try {
+                    switch (type) {
+                        case 'application':
+                            await loadApplications();
+                            break;
+                        case 'phishing':
+                            await loadPhishing();
+                            break;
+                        case 'qris':
+                            await loadQRIS();
+                            break;
+                        case 'virtual':
+                            await loadVirtualNumbers();
+                            break;
+                    }
+                    updateStats();
+                } catch (error) {
+                    console.error('Error refreshing data:', error);
+                    showError('Failed to refresh data');
+                } finally {
+                    button.innerHTML = originalText;
+                    button.disabled = false;
+                }
+            }, 1000);
+        }
+
+        // Format date
+        function formatDate(dateString) {
+            if (!dateString) return 'N/A';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        // Show error message
+        function showError(message) {
+            // You can implement a toast notification here
+            console.error(message);
+        }
+    </script>
+</body>
+
+</html>
