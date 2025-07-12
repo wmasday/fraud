@@ -56,9 +56,9 @@ async function handlePhishing(message, db, axios, openai) {
             if (!created) {
                 await record.increment('report_count');
                 if (record.llm_report) {
-                    await message.reply('Link sudah pernah dilaporkan, report_count ditambah.\n\nAnalisis sebelumnya:\n' + record.llm_report);
+                    await message.reply('Link sudah pernah dilaporkan, report count ditambah.\n\nAnalisis sebelumnya:\n' + record.llm_report);
                 } else {
-                    await message.reply('Link sudah pernah dilaporkan, report_count ditambah.');
+                    await message.reply('Link sudah pernah dilaporkan, report count ditambah.');
                 }
                 return true;
             }
